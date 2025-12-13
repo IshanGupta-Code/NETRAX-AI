@@ -9,3 +9,4 @@ for i in range(6):
         cap.release()
     else:
         print(f"Camera {i}: NOT available")
+        

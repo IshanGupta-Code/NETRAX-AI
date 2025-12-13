@@ -16,30 +16,30 @@ class BodyDetectionConfig:
     
     
     def __init__(self):
-        # Camera
+        # Camera settings
         self.camera_id = 0
         self.camera_width = 1280
         self.camera_height = 720
         self.camera_fps = 30
         self.mirror_camera = True
         
-        # Pose
+        # Pose detection
         self.pose_framework = PoseFramework.MEDIAPIPE
         self.pose_confidence = 0.5
         self.pose_tracking_confidence = 0.5
         self.pose_model_complexity = 1
         
-        # Gesture
+        # Gesture recognition
         self.gesture_min_confidence = 0.6
         self.gesture_hold_time = 0.3
         self.swipe_threshold = 0.15
         
-        # Tracking
+        # Tracking/smoothing
         self.enable_smoothing = True
-        self.smoothing_type = "one_euro" 
+        self.smoothing_type = "one_euro"  # "one_euro", "moving_average", "exponential"
         
         # Integration
-        self.integration_mode = "callback"  
+        self.integration_mode = "callback"  # "callback", "queue", "event_bus"
         self.gesture_mapping_file = None
         
         # Display
@@ -49,7 +49,7 @@ class BodyDetectionConfig:
         
         # Performance
         self.target_fps = 30
-        self.skip_frames = 0  
+        self.skip_frames = 0  # Process every Nth frame (0 = process all)
         
     @classmethod
     def from_file(cls, config_path: Path) -> 'BodyDetectionConfig':
@@ -96,10 +96,15 @@ class BodyDetectionConfig:
 
 
 class BodyDetectionSystem:
-    
+    """Main body detection system manager"""
     
     def __init__(self, config: Optional[BodyDetectionConfig] = None):
-       
+        """
+        Initialize body detection system
+        
+        Args:
+            config: System configuration
+        """
         self.config = config or BodyDetectionConfig()
         
         # Components
@@ -129,7 +134,7 @@ class BodyDetectionSystem:
         print("[BodyDetection] System initialized")
         
     def initialize(self) -> bool:
-       
+        """Initialize all components"""
         print("[BodyDetection] Initializing components...")
         
         try:
@@ -185,7 +190,7 @@ class BodyDetectionSystem:
             return False
             
     def start(self) -> bool:
-        
+        """Start detection system"""
         if self.running:
             print("[BodyDetection] Already running")
             return False
@@ -204,7 +209,7 @@ class BodyDetectionSystem:
         return True
         
     def stop(self):
-        
+        """Stop detection system"""
         if not self.running:
             return
             
@@ -230,17 +235,17 @@ class BodyDetectionSystem:
         print(f"  Average FPS: {self.frame_count / elapsed:.1f}")
         
     def pause(self):
-       
+        """Pause detection"""
         self.paused = True
         print("[BodyDetection] Paused")
         
     def resume(self):
-        
+        """Resume detection"""
         self.paused = False
         print("[BodyDetection] Resumed")
         
     def _detection_loop(self):
-       
+        """Main detection loop"""
         frame_skip_counter = 0
         last_fps_time = time.time()
         fps_frame_count = 0
@@ -310,7 +315,7 @@ class BodyDetectionSystem:
                              frame, 
                              pose_result: PoseResult,
                              gestures: list) -> Any:
-       
+        """Create visualization frame"""
         vis_frame = frame.copy()
         
         # Draw pose landmarks
@@ -345,7 +350,7 @@ class BodyDetectionSystem:
         return vis_frame
         
     def show_visualization_window(self):
-        
+        """Show visualization in OpenCV window (blocking)"""
         if not self.config.show_visualization:
             print("[BodyDetection] Visualization disabled in config")
             return
@@ -365,12 +370,12 @@ class BodyDetectionSystem:
         cv2.destroyAllWindows()
         
     def register_command_callback(self, callback: Callable[[JARVISCommand], None]):
-        
+        """Register callback for JARVIS commands"""
         if self.adapter:
             self.adapter.register_callback(callback)
             
     def get_stats(self) -> Dict[str, Any]:
-        
+        """Get system statistics"""
         stats = {
             "running": self.running,
             "paused": self.paused,

@@ -1,3 +1,8 @@
+"""
+JARVIS Body Detection System - Tracking & Smoothing Layer
+Reduces jitter and tracks poses across frames
+"""
+
 import numpy as np
 from typing import Dict, Optional, Deque
 from collections import deque
@@ -7,13 +12,21 @@ from pose import PoseResult, Keypoint
 
 
 class OneEuroFilter:
-   
+    """
+    One Euro Filter for smoothing noisy signals
+    https://cristal.univ-lille.fr/~casiez/1euro/
+    """
     
     def __init__(self,
                  min_cutoff: float = 1.0,
                  beta: float = 0.007,
                  d_cutoff: float = 1.0):
-       
+        """
+        Args:
+            min_cutoff: Minimum cutoff frequency
+            beta: Speed coefficient
+            d_cutoff: Cutoff for derivative
+        """
         self.min_cutoff = min_cutoff
         self.beta = beta
         self.d_cutoff = d_cutoff
@@ -23,7 +36,7 @@ class OneEuroFilter:
         self.t_prev = None
         
     def __call__(self, x: float, t: float) -> float:
-        
+        """Filter value x at time t"""
         if self.x_prev is None:
             self.x_prev = x
             self.t_prev = t
@@ -56,28 +69,32 @@ class OneEuroFilter:
         return x_smooth
         
     def _smoothing_factor(self, dt: float, cutoff: float) -> float:
-      
+        """Calculate smoothing factor"""
         r = 2 * math.pi * cutoff * dt
         return r / (r + 1)
         
     def _exponential_smoothing(self, alpha: float, x: float, x_prev: float) -> float:
-        
+        """Exponential smoothing"""
         return alpha * x + (1 - alpha) * x_prev
         
     def reset(self):
-        
+        """Reset filter state"""
         self.x_prev = None
         self.dx_prev = 0.0
         self.t_prev = None
 
 
 class KeypointTracker:
-    
+    """Track and smooth individual keypoints"""
     
     def __init__(self,
                  smoothing_type: str = "one_euro",
                  window_size: int = 5):
-     
+        """
+        Args:
+            smoothing_type: "one_euro", "moving_average", or "exponential"
+            window_size: Window size for moving average
+        """
         self.smoothing_type = smoothing_type
         self.window_size = window_size
         
@@ -88,7 +105,17 @@ class KeypointTracker:
               keypoint_dict: Dict[str, Keypoint],
               timestamp: float,
               namespace: str = "default") -> Dict[str, Keypoint]:
-       
+        """
+        Track and smooth keypoints
+        
+        Args:
+            keypoint_dict: Dictionary of keypoints
+            timestamp: Current timestamp
+            namespace: Namespace for tracking (e.g., "left_hand", "pose")
+            
+        Returns:
+            Smoothed keypoints
+        """
         if not keypoint_dict:
             return {}
             
@@ -112,7 +139,7 @@ class KeypointTracker:
                         key: str,
                         kp: Keypoint,
                         timestamp: float) -> Keypoint:
-        
+        """Smooth using One Euro Filter"""
         if key not in self.filters:
             self.filters[key] = {
                 'x': OneEuroFilter(),
@@ -131,7 +158,7 @@ class KeypointTracker:
         )
         
     def _smooth_moving_average(self, key: str, kp: Keypoint) -> Keypoint:
-        
+        """Smooth using moving average"""
         if key not in self.history:
             self.history[key] = deque(maxlen=self.window_size)
             
@@ -155,7 +182,7 @@ class KeypointTracker:
         )
         
     def _smooth_exponential(self, key: str, kp: Keypoint, alpha: float = 0.3) -> Keypoint:
-        
+        """Smooth using exponential moving average"""
         if key not in self.history or not self.history[key]:
             self.history[key] = deque(maxlen=1)
             self.history[key].append(kp)
@@ -175,19 +202,24 @@ class KeypointTracker:
         return smoothed
         
     def reset(self):
-        
+        """Reset all trackers"""
         self.filters.clear()
         self.history.clear()
 
 
 class PoseTracker:
-    
+    """Track complete pose across frames"""
     
     def __init__(self,
                  smoothing_type: str = "one_euro",
                  confidence_threshold: float = 0.5,
                  interpolate_missing: bool = True):
-        
+        """
+        Args:
+            smoothing_type: Type of smoothing to apply
+            confidence_threshold: Minimum confidence for tracking
+            interpolate_missing: Interpolate missing keypoints
+        """
         self.smoothing_type = smoothing_type
         self.confidence_threshold = confidence_threshold
         self.interpolate_missing = interpolate_missing
@@ -199,7 +231,15 @@ class PoseTracker:
         self.last_pose: Optional[PoseResult] = None
         
     def track(self, pose_result: PoseResult) -> PoseResult:
-       
+        """
+        Track and smooth entire pose
+        
+        Args:
+            pose_result: Raw pose detection result
+            
+        Returns:
+            Smoothed and tracked pose
+        """
         timestamp = pose_result.timestamp
         
         # Track each component
@@ -243,7 +283,7 @@ class PoseTracker:
     def _interpolate_missing(self,
                             current: PoseResult,
                             previous: PoseResult) -> PoseResult:
-        
+        """Interpolate missing keypoints from previous frame"""
         # Interpolate pose landmarks
         if not current.pose_landmarks and previous.pose_landmarks:
             # If completely missing, use previous with reduced confidence
@@ -268,7 +308,7 @@ class PoseTracker:
         return current
         
     def reset(self):
-        
+        """Reset all trackers"""
         self.pose_tracker.reset()
         self.left_hand_tracker.reset()
         self.right_hand_tracker.reset()
