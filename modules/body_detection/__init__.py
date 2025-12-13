@@ -1,8 +1,3 @@
-"""
-JARVIS Body Detection Module
-
-Real-time gesture control system for JARVIS using computer vision.
-"""
 
 from .body_detection import BodyDetectionSystem, BodyDetectionConfig
 from .adapter import JARVISAdapter, GestureCommandMapper, JARVISCommand

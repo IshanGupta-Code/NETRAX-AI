@@ -1,7 +1,3 @@
-"""
-JARVIS Body Detection System - Integration Adapter
-Converts gestures to JARVIS commands and integrates with existing system
-"""
 
 import json
 import threading

@@ -1,7 +1,3 @@
-"""
-JARVIS Body Detection System - Camera Layer
-Handles webcam capture with frame buffering and preprocessing
-"""
 
 import cv2
 import threading
@@ -20,16 +16,7 @@ class CameraStream:
                  height: int = 720,
                  fps: int = 30,
                  buffer_size: int = 2):
-        """
-        Initialize camera stream
-        
-        Args:
-            camera_id: Camera device ID (0 for default)
-            width: Frame width
-            height: Frame height
-            fps: Target frames per second
-            buffer_size: Frame buffer size (smaller = lower latency)
-        """
+       
         self.camera_id = camera_id
         self.width = width
         self.height = height
@@ -134,17 +121,7 @@ class CameraStream:
                         frame: np.ndarray,
                         target_size: Optional[Tuple[int, int]] = None,
                         normalize: bool = False) -> np.ndarray:
-        """
-        Preprocess frame for model input
-        
-        Args:
-            frame: Input frame (BGR)
-            target_size: Resize to (width, height), None to keep original
-            normalize: Normalize to [0, 1] range
-            
-        Returns:
-            Preprocessed frame
-        """
+     
         if frame is None:
             return None
             

@@ -1,7 +1,3 @@
-"""
-JARVIS Body Detection System - Gesture Recognition Layer
-Converts pose data into recognized gestures and commands
-"""
 
 import numpy as np
 from typing import Dict, List, Optional, Callable

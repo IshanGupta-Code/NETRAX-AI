@@ -1,7 +1,4 @@
-"""
-JARVIS Body Detection System - Pose Detection Layer
-Supports MediaPipe Holistic, MoveNet, and extensible architecture
-"""
+
 
 import cv2
 import numpy as np

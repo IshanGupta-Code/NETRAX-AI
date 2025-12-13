@@ -1,15 +1,3 @@
-# backend_server.py
-"""
-FastAPI backend:
- - /video_feed -> MJPEG stream from OpenCV (uses configured camera_id)
- - /ws         -> WebSocket sending JSON messages for gestures & stats
-This expects your BodyDetectionSystem (or camera settings) to exist;
-it will attempt to import modules.body_detection.body_detection.BodyDetectionSystem
-and BodyDetectionConfig. If those names differ, adjust the imports below.
-
-If you don't have a BodyDetectionSystem class exposed, the server will fall back
-to a simple OpenCV camera stream and simulated gesture events.
-"""
 
 import asyncio
 import json
@@ -26,12 +14,11 @@ import psutil
 
 app = FastAPI()
 
-# ---- Configuration ----
-# Path to config (edit if different)
+
 CONFIG_PATH = "config/body_detection_config.json"
 DEFAULT_CAMERA_ID = 0
 
-# Shared frame holder (thread-safe)
+
 frame_lock = threading.Lock()
 latest_frame = None
 latest_stats = {
@@ -41,7 +28,7 @@ latest_stats = {
     "confidence": 0.0
 }
 
-# WebSocket manager
+
 class ConnectionManager:
     def __init__(self):
         self.active: set[WebSocket] = set()
@@ -63,22 +50,19 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-# Try to import your BodyDetection classes if available
 BodyDetectionSystem = None
 BodyDetectionConfig = None
 try:
-    from modules.body_detection.body_detection import BodyDetectionSystem, BodyDetectionConfig  # adjust if needed
+    from modules.body_detection.body_detection import BodyDetectionSystem, BodyDetectionConfig 
 except Exception:
     BodyDetectionSystem = None
     BodyDetectionConfig = None
 
-# Camera / detection thread: either use BodyDetectionSystem or fallback to OpenCV loop
 _stop_event = threading.Event()
 
 def detection_thread_main():
     global latest_frame, latest_stats
 
-    # If BodyDetectionSystem exists, initialize it and register callback
     if BodyDetectionSystem and BodyDetectionConfig:
         try:
             cfg = BodyDetectionConfig.from_file(CONFIG_PATH)
@@ -91,29 +75,24 @@ def detection_thread_main():
             detector = None
 
         if detector:
-            # callback for gestures -> broadcast to websockets
             def on_command(cmd):
-                # cmd is expected to have .action and .parameters or be a dict
                 payload = {
                     "type": "gesture_command",
                     "timestamp": time.time(),
                     "command": getattr(cmd, "action", str(cmd)),
                     "parameters": getattr(cmd, "parameters", {})
                 }
-                # schedule async broadcast
                 asyncio.run_coroutine_threadsafe(manager.broadcast(payload), loop=asyncio.get_event_loop())
 
             try:
                 detector.register_command_callback(on_command)
             except Exception:
-                # if that method is not available, ignore
+                
                 pass
 
             detector.start()
-            # rely on detector to keep producing frames; poll for its latest frame attribute if present
             while not _stop_event.is_set():
                 try:
-                    # try standard attribute names; you may need to adjust
                     frame = None
                     if hasattr(detector, "current_frame"):
                         frame = detector.current_frame
@@ -122,7 +101,6 @@ def detection_thread_main():
                     if frame is not None:
                         with frame_lock:
                             latest_frame = frame.copy() if isinstance(frame, np.ndarray) else frame
-                    # stats (attempt to read)
                     s = {}
                     s["fps"] = getattr(detector, "fps", latest_stats["fps"])
                     s["gesture_count"] = getattr(detector, "gesture_count", latest_stats["gesture_count"])
@@ -135,7 +113,6 @@ def detection_thread_main():
             detector.stop()
             return
 
-    # Fallback simple OpenCV camera stream + simulated gestures
     cam_id = DEFAULT_CAMERA_ID
     try:
         import json, os
@@ -146,7 +123,6 @@ def detection_thread_main():
     except Exception:
         pass
 
-       # Robust camera open (Windows): try DirectShow / MSMF / default
     def open_camera_try(cam_id):
         backends = [cv2.CAP_DSHOW, cv2.CAP_MSMF, 0]
         cap = None
@@ -158,7 +134,6 @@ def detection_thread_main():
             if cap is None:
                 continue
             if cap.isOpened():
-                # Try to set preferred props but only if opened
                 try:
                     cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
                     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
@@ -192,7 +167,6 @@ def detection_thread_main():
             ret, frame = False, None
 
         if not ret or frame is None:
-            # blank frame fallback
             blank = np.zeros((480, 640, 3), dtype=np.uint8)
             with frame_lock:
                 latest_frame = blank
@@ -205,7 +179,6 @@ def detection_thread_main():
             frames = 0
             last = time.time()
 
-        # optional simulated gestures for testing
         if np.random.rand() > 0.995:
             gesture_counter += 1
             payload = {
@@ -219,7 +192,7 @@ def detection_thread_main():
                 loop=asyncio.get_event_loop()
             )
 
-        detection_counter += 0  # placeholder
+        detection_counter += 0  
 
         with frame_lock:
             latest_frame = frame.copy()
@@ -233,10 +206,8 @@ def detection_thread_main():
         cap.release()
 
 
-# Start detection thread
 threading.Thread(target=detection_thread_main, daemon=True).start()
 
-# MJPEG streamer generator
 def mjpeg_generator():
     global latest_frame
     while True:
@@ -245,15 +216,12 @@ def mjpeg_generator():
         with frame_lock:
             frame = latest_frame
         if frame is None:
-            # black placeholder
             img = np.zeros((480, 640, 3), dtype=np.uint8)
             ret, jpeg = cv2.imencode('.jpg', img)
         else:
-            # ensure it's BGR numpy array
             if isinstance(frame, np.ndarray):
                 ret, jpeg = cv2.imencode('.jpg', frame)
             else:
-                # if frame is an encoded JPEG bytes already
                 try:
                     jpeg = frame
                 except Exception:
@@ -271,7 +239,6 @@ def mjpeg_generator():
 
 @app.get("/")
 def index():
-    # simple page explaining endpoints
     text = """
     <html><body>
     <h3>NETRAX AI backend</h3>
@@ -291,9 +258,7 @@ def video_feed():
 async def websocket_endpoint(ws: WebSocket):
     await manager.connect(ws)
     try:
-        # send periodic stats updates while connected
         while True:
-            # we send stats every 0.5 seconds
             payload = {"type": "stats", "timestamp": time.time(), "stats": latest_stats.copy(), "cpu": psutil.cpu_percent()}
             await ws.send_text(json.dumps(payload))
             await asyncio.sleep(0.5)
