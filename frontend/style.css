@@ -1,0 +1,630 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #000000;
+    color: #e0e0e0;
+    height: 100vh;
+    overflow: hidden;
+    cursor: none;
+}
+
+/* Custom Cursor */
+.custom-cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ff0000;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    transition: transform 0.1s ease;
+    box-shadow: 0 0 10px #ff0000;
+}
+
+/* Thread Animation Container */
+.thread-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thread-container.hidden {
+    animation: fadeOut 1s ease forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+.thread {
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to bottom,
+            transparent 0%,
+            #ff0000 20%,
+            #8b0000 50%,
+            #ff0000 80%,
+            transparent 100%);
+    transform-origin: top;
+    animation: threadOpen 2s ease-out forwards;
+    box-shadow: 0 0 10px #ff0000;
+}
+
+@keyframes threadOpen {
+    0% {
+        transform: scaleX(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scaleX(1.5);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scaleX(0);
+        opacity: 0;
+    }
+}
+
+/* Main Container */
+.main-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, #1a0000 0%, #000000 100%);
+    overflow: hidden;
+}
+
+/* Red Particles */
+.particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #ff0000;
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: float 15s infinite;
+    box-shadow: 0 0 5px #ff0000;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.2;
+    }
+
+    50% {
+        transform: translate(var(--tx), var(--ty)) scale(1.5);
+        opacity: 0.6;
+    }
+}
+
+/* Eye Container */
+.eye-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    animation: eyeAppear 1s ease 2s forwards;
+    z-index: 100;
+}
+
+@keyframes eyeAppear {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Main Eye */
+.main-eye {
+    position: relative;
+    width: 200px;
+    height: 110px;
+    background: radial-gradient(ellipse, #ffffff 0%, #f5f5f5 100%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow:
+        0 0 30px rgba(255, 0, 0, 0.3),
+        inset 0 -10px 20px rgba(0, 0, 0, 0.2),
+        0 5px 15px rgba(0, 0, 0, 0.5);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-eye.open .eyelid {
+    transform: translateY(-120%);
+}
+
+.main-eye.open .eyelid.bottom {
+    transform: translateY(120%);
+}
+
+.main-eye.awakened {
+    width: 240px;
+    height: 130px;
+    box-shadow:
+        0 0 60px rgba(255, 0, 0, 0.8),
+        inset 0 -10px 30px rgba(139, 0, 0, 0.3),
+        0 10px 30px rgba(0, 0, 0, 0.8);
+}
+
+.main-eye.closing {
+    animation: eyeShrink 1.5s ease-out forwards;
+}
+
+@keyframes eyeShrink {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(0.5);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+/* Eyelids */
+.eyelid {
+    position: absolute;
+    width: 100%;
+    height: 55%;
+    background: linear-gradient(to bottom, #1a0000, #000000);
+    z-index: 10;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.eyelid.top {
+    top: 0;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    border-bottom: 2px solid #330000;
+}
+
+.eyelid.bottom {
+    bottom: 0;
+    border-radius: 0 0 50% 50% / 0 0 100% 100%;
+    border-top: 2px solid #330000;
+    transform: translateY(0);
+}
+
+/* Iris Container */
+.iris-container {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.2s ease;
+    z-index: 5;
+}
+
+.main-eye.awakened .iris-container {
+    width: 85px;
+    height: 85px;
+}
+
+/* Iris */
+.iris {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, #4a90e2 0%, #2c5aa0 50%, #1a3a6e 100%);
+    border-radius: 50%;
+    position: relative;
+    box-shadow:
+        0 0 15px rgba(74, 144, 226, 0.5),
+        inset 0 0 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.8s ease;
+}
+
+.main-eye.awakened .iris {
+    background: radial-gradient(circle, #ff4444 0%, #cc0000 40%, #660000 100%);
+    animation: redPulse 2s ease-in-out infinite;
+}
+
+@keyframes redPulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 30px rgba(255, 0, 0, 0.6),
+            inset 0 0 20px rgba(255, 0, 0, 0.3);
+    }
+
+    50% {
+        box-shadow:
+            0 0 50px rgba(255, 0, 0, 1),
+            inset 0 0 30px rgba(255, 0, 0, 0.5);
+    }
+}
+
+/* Pupil */
+.pupil {
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    background: #000;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+    transition: all 0.1s ease;
+}
+
+.main-eye.awakened .pupil {
+    width: 28px;
+    height: 28px;
+}
+
+/* Reflection */
+.reflection {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    top: 22%;
+    left: 30%;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+/* Small Eyes */
+.small-eyes-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+}
+
+.small-eye {
+    position: absolute;
+    width: 55px;
+    height: 32px;
+    background: radial-gradient(ellipse, #ffffff 0%, #eeeeee 100%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    overflow: hidden;
+    box-shadow:
+        0 0 15px rgba(255, 0, 0, 0.3),
+        inset 0 -5px 10px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.5s ease;
+}
+
+.small-eye.visible {
+    opacity: 1;
+    transform: scale(1);
+    animation: floatEye 5s ease-in-out infinite;
+}
+
+@keyframes floatEye {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg) scale(1);
+    }
+
+    50% {
+        transform: translateY(-12px) rotate(3deg) scale(1.05);
+    }
+}
+
+.small-eye .iris-container {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.small-eye .iris {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, #ff6666 0%, #cc0000 60%, #660000 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+}
+
+.small-eye .pupil {
+    width: 11px;
+    height: 11px;
+}
+
+.small-eye .reflection {
+    width: 5px;
+    height: 5px;
+    top: 25%;
+    left: 30%;
+}
+
+/* UI Panels */
+.ui-panel {
+    position: fixed;
+    background: rgba(10, 0, 0, 0.4);
+    backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.6),
+        inset 0 1px 1px rgba(255, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+    z-index: 200;
+}
+
+.ui-panel.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Video Feed */
+.video-panel {
+    top: 20px;
+    right: 20px;
+    width: 340px;
+    height: 260px;
+}
+
+.video-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #ff0000;
+    font-size: 0.95em;
+    border: 2px dashed rgba(255, 0, 0, 0.3);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.video-title {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    color: #ff3333;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.start-detection-btn {
+    margin-top: 15px;
+    padding: 10px 25px;
+    background: rgba(255, 0, 0, 0.2);
+    border: 1px solid #ff0000;
+    border-radius: 25px;
+    color: #ff0000;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+}
+
+.start-detection-btn:hover {
+    background: rgba(255, 0, 0, 0.4);
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+    transform: scale(1.05);
+}
+
+/* Stats Panel */
+.stats-panel {
+    bottom: 20px;
+    left: 20px;
+    min-width: 300px;
+}
+
+.panel-title {
+    color: #ff3333;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.stat-box {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2.2em;
+    color: #ff0000;
+    font-weight: bold;
+    text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+}
+
+.stat-label {
+    font-size: 0.8em;
+    color: #999;
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Gestures Panel */
+.gestures-panel {
+    bottom: 20px;
+    right: 20px;
+    max-width: 380px;
+}
+
+.gesture-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.gesture-box {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    text-align: center;
+    font-size: 1.8em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.gesture-box:hover {
+    background: rgba(255, 0, 0, 0.1);
+    border-color: rgba(255, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.gesture-box.active {
+    background: rgba(255, 0, 0, 0.3);
+    border-color: #ff0000;
+    animation: gestureFlash 0.6s ease;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+}
+
+@keyframes gestureFlash {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+/* Branding */
+.branding {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 2em;
+    font-weight: bold;
+    color: #ff0000;
+    text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+    letter-spacing: 3px;
+    opacity: 0;
+    animation: fadeIn 1s ease 2.5s forwards;
+    z-index: 300;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+.branding .subtitle {
+    font-size: 0.35em;
+    color: #999;
+    letter-spacing: 5px;
+    margin-top: 5px;
+}
+
+/* Instruction Text */
+.instruction {
+    position: absolute;
+    top: -70px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ff3333;
+    font-size: 1.1em;
+    white-space: nowrap;
+    text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+    animation: pulse 2.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-8px);
+    }
+}
+
+.instruction.hidden {
+    display: none;
+}
+
+/* Close Button */
+.close-indicator {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ff3333;
+    font-size: 0.9em;
+    opacity: 0;
+    white-space: nowrap;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+}
+
+.close-indicator.visible {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
