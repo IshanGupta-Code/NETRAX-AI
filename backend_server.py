@@ -1,4 +1,3 @@
-
 import asyncio
 import json
 import time
@@ -13,7 +12,6 @@ import numpy as np
 import psutil
 
 app = FastAPI()
-
 
 CONFIG_PATH = "config/body_detection_config.json"
 DEFAULT_CAMERA_ID = 0
