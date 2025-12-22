@@ -524,7 +524,7 @@ flake8 . --max-line-length 100
 
 ## 📝 License
 
-[Your License Here]
+MIT License
 
 ---
 
@@ -541,9 +541,9 @@ Contributions welcome! Please:
 
 ## 📧 Support
 
-- Issues: [GitHub Issues]
-- Docs: [Full Documentation]
-- Email: [Your Email]
+- Issues: https://github.com/Sidvortex/NETRAX-AI
+- Docs: 
+- Email: Ravada Siddharth
 
 ---
 
