@@ -1,8 +1,3 @@
-"""
-NETRAX AI - Tracking Coordinator
-Orchestrates all vision subsystems and data fusion
-"""
-
 import cv2
 import numpy as np
 from typing import Dict, Any, Tuple, Optional
@@ -20,11 +15,7 @@ from config import settings
 logger = logging.getLogger("NETRAX.Coordinator")
 
 class TrackingCoordinator:
-    """
-    Master coordinator for all vision subsystems
-    Handles data fusion, synchronization, and visualization
-    """
-    
+   
     def __init__(self, 
                  enable_body: bool = True,
                  enable_iris: bool = True,
@@ -65,10 +56,7 @@ class TrackingCoordinator:
                    f"Gestures: {enable_gestures}, Objects: {enable_objects}")
     
     def process_frame(self, frame: np.ndarray) -> Tuple[np.ndarray, Dict[str, Any]]:
-        """
-        Process a single frame through all vision subsystems
-        Returns: (processed_frame, tracking_data)
-        """
+       
         start_time = time.time()
         
         # Prepare output frame
@@ -164,7 +152,6 @@ class TrackingCoordinator:
         return output_frame, tracking_data
     
     def _calculate_confidence(self, tracking_data: Dict[str, Any]) -> float:
-        """Calculate overall tracking confidence"""
         confidences = []
         
         if tracking_data.get("body", {}).get("confidence"):
@@ -182,20 +169,17 @@ class TrackingCoordinator:
         return sum(confidences) / len(confidences) if confidences else 0.0
     
     def _get_fps(self) -> float:
-        """Calculate current FPS"""
         if self.frame_count == 0:
             return 0.0
         elapsed = time.time() - self.start_time
         return self.frame_count / elapsed if elapsed > 0 else 0.0
     
     def _get_avg_processing_time(self) -> float:
-        """Get average processing time in ms"""
         if not self.processing_times:
             return 0.0
         return (sum(self.processing_times) / len(self.processing_times)) * 1000
     
     def calibrate(self):
-        """Calibrate all tracking systems"""
         logger.info("🎯 Starting calibration...")
         self.calibration_frames = []
         self.calibrated = False
@@ -211,7 +195,6 @@ class TrackingCoordinator:
         logger.info("✅ Calibration complete")
     
     def reset(self):
-        """Reset all tracking systems"""
         logger.info("🔄 Resetting tracking systems...")
         
         self.frame_count = 0
@@ -232,7 +215,6 @@ class TrackingCoordinator:
         logger.info("✅ Reset complete")
     
     def cleanup(self):
-        """Cleanup resources"""
         logger.info("🧹 Cleaning up coordinator...")
         
         if self.body_tracker:
@@ -247,7 +229,6 @@ class TrackingCoordinator:
         logger.info("✅ Cleanup complete")
     
     def get_stats(self) -> Dict[str, Any]:
-        """Get performance statistics"""
         return {
             "fps": self._get_fps(),
             "frame_count": self.frame_count,

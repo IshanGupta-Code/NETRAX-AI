@@ -1,7 +1,3 @@
-"""
-NETRAX AI - Vision System Core Server
-Production-grade real-time computer vision engine
-"""
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import StreamingResponse, HTMLResponse

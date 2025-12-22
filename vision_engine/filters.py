@@ -1,26 +1,13 @@
-"""
-NETRAX AI - Kalman Filters
-Smoothing filters for ultra-stable tracking
-"""
 
 import numpy as np
 from typing import Tuple
 
 class KalmanFilter:
-    """
-    1D Kalman filter for smoothing landmark coordinates
-    Reduces jitter and noise in tracking data
-    """
+    
     
     def __init__(self, process_noise: float = 0.01, 
                  measurement_noise: float = 0.1):
-        """
-        Initialize Kalman filter
         
-        Args:
-            process_noise: Process noise covariance (Q)
-            measurement_noise: Measurement noise covariance (R)
-        """
         # State estimate
         self.x = 0.0  # Position
         self.v = 0.0  # Velocity
@@ -46,16 +33,7 @@ class KalmanFilter:
         self.initialized = False
     
     def update(self, measurement: float, dt: float = 1.0) -> Tuple[float, float]:
-        """
-        Update filter with new measurement
-        
-        Args:
-            measurement: New measurement value
-            dt: Time delta (default 1.0)
-            
-        Returns:
-            Tuple of (filtered_position, filtered_velocity)
-        """
+     
         # Initialize on first measurement
         if not self.initialized:
             self.x = measurement
@@ -98,7 +76,6 @@ class KalmanFilter:
         return self.x, self.v
     
     def reset(self):
-        """Reset filter to initial state"""
         self.x = 0.0
         self.v = 0.0
         self.P = np.array([[1.0, 0.0],
@@ -107,9 +84,7 @@ class KalmanFilter:
 
 
 class KalmanFilter2D:
-    """
-    2D Kalman filter for smoothing x,y coordinates
-    """
+    
     
     def __init__(self, process_noise: float = 0.01, 
                  measurement_noise: float = 0.1):
@@ -117,12 +92,10 @@ class KalmanFilter2D:
         self.filter_y = KalmanFilter(process_noise, measurement_noise)
     
     def update(self, x: float, y: float, dt: float = 1.0) -> Tuple[float, float]:
-        """Update with 2D measurement"""
         filtered_x, _ = self.filter_x.update(x, dt)
         filtered_y, _ = self.filter_y.update(y, dt)
         return filtered_x, filtered_y
     
     def reset(self):
-        """Reset both filters"""
         self.filter_x.reset()
         self.filter_y.reset()

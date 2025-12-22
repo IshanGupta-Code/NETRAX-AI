@@ -1,5 +1,3 @@
-# NETRAX AI - Vision System Dockerfile
-# Multi-stage build for optimal image size
 
 FROM python:3.10-slim as base
 

@@ -1,7 +1,4 @@
-"""
-NETRAX AI - Gesture Recognition Engine
-Real-time hand and body gesture classification with temporal smoothing
-"""
+
 
 import numpy as np
 from typing import Dict, Any, List, Optional
@@ -12,10 +9,7 @@ from config import settings
 logger = logging.getLogger("NETRAX.GestureEngine")
 
 class GestureEngine:
-    """
-    Advanced gesture recognition using body and hand landmarks
-    Supports static and dynamic gestures with temporal smoothing
-    """
+   
     
     def __init__(self):
         logger.info("👋 Initializing Gesture Engine...")
@@ -37,7 +31,6 @@ class GestureEngine:
         logger.info(f"✅ Gesture Engine initialized with {len(self.gesture_rules)} gestures")
     
     def _define_gesture_rules(self) -> Dict[str, callable]:
-        """Define gesture detection rules"""
         return {
             "peace": self._detect_peace,
             "stop": self._detect_stop,
@@ -51,15 +44,7 @@ class GestureEngine:
         }
     
     def process(self, body_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Process body data and recognize gestures
         
-        Args:
-            body_data: Body tracking data from BodyTracker
-            
-        Returns:
-            Gesture recognition result
-        """
         try:
             if not body_data.get("detected"):
                 return {
@@ -125,7 +110,6 @@ class GestureEngine:
             }
     
     def _smooth_gesture(self) -> Optional[str]:
-        """Apply temporal smoothing to gesture buffer"""
         if not self.gesture_buffer:
             return None
         

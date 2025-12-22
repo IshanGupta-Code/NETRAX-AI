@@ -1,7 +1,3 @@
-#!/bin/bash
-
-# NETRAX AI - Vision System Setup Script
-# Automates installation and configuration
 
 set -e
 

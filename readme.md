@@ -4,7 +4,6 @@
 
 A sentient surveillance system featuring full-body tracking, ultra-precision iris detection, gesture recognition, and object detection. Built for deployment, not demos.
 
----
 
 ## 🎯 Features
 
@@ -28,11 +27,10 @@ A sentient surveillance system featuring full-body tracking, ultra-precision iri
 - **HUD overlays** - Dystopian interface
 - **Scanline effects** (optional) - CRT monitor simulation
 
----
 
 ## 📁 Project Structure
 
-```
+
 netrax-vision/
 ├── main.py                      # Core FastAPI server
 ├── config.py                    # Configuration management
@@ -55,9 +53,9 @@ netrax-vision/
 ├── logs/                        # Application logs
 └── frontend/
     └── index.html               # Your existing frontend
-```
 
----
+
+
 
 ## 🚀 Quick Start
 

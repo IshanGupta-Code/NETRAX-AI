@@ -1,8 +1,4 @@
-"""
-NETRAX AI - Iris Tracker
-Ultra-high-precision iris, pupil, and gaze tracking
-Sub-pixel accuracy with micro-movement detection
-"""
+
 
 import mediapipe as mp
 import numpy as np
@@ -14,15 +10,7 @@ from config import settings
 logger = logging.getLogger("NETRAX.IrisTracker")
 
 class IrisTracker:
-    """
-    Ultra-precision iris and eye tracking system
-    - Iris landmark detection (5 points per iris)
-    - Pupil center and diameter estimation
-    - Gaze direction vectors (3D)
-    - Blink detection and classification
-    - Micro-saccade tracking
-    - Pupil dilation monitoring
-    """
+
     
     def __init__(self):
         logger.info("👁️ Initializing Iris Tracker...")
@@ -77,7 +65,6 @@ class IrisTracker:
         logger.info("✅ Iris Tracker initialized with sub-pixel precision")
     
     def _initialize_filters(self):
-        """Initialize Kalman filters for ultra-smooth tracking"""
         from vision_engine.filters import KalmanFilter
         
         # Filters for iris centers
@@ -92,15 +79,7 @@ class IrisTracker:
         self.filters["gaze_z"] = KalmanFilter(0.01, 0.1)
     
     def process(self, rgb_frame: np.ndarray) -> Dict[str, Any]:
-        """
-        Process frame for ultra-precision iris tracking
         
-        Args:
-            rgb_frame: RGB image
-            
-        Returns:
-            Comprehensive iris and gaze tracking data
-        """
         try:
             h, w = rgb_frame.shape[:2]
             
@@ -188,7 +167,6 @@ class IrisTracker:
     
     def _extract_iris_data(self, landmarks, iris_indices: List[int], 
                           side: str, w: int, h: int) -> Dict:
-        """Extract detailed iris landmark data with sub-pixel precision"""
         iris_points = []
         
         for idx in iris_indices:
@@ -225,7 +203,6 @@ class IrisTracker:
         }
     
     def _calculate_iris_radius(self, points: List[Dict]) -> float:
-        """Calculate iris radius from landmark points"""
         if len(points) < 5:
             return 0.0
         
@@ -242,7 +219,6 @@ class IrisTracker:
     
     def _calculate_gaze_direction(self, left_iris: Dict, 
                                   right_iris: Dict) -> Dict:
-        """Calculate 3D gaze direction vector"""
         if not left_iris or not right_iris:
             return {"x": 0.0, "y": 0.0, "z": 0.0, "magnitude": 0.0}
         
@@ -275,7 +251,6 @@ class IrisTracker:
         return gaze_vector
     
     def _detect_blinks(self, landmarks, w: int, h: int) -> Dict:
-        """Detect eye blinks with high precision"""
         left_openness = self._calculate_eye_openness(
             landmarks, self.LEFT_EYE_TOP, self.LEFT_EYE_BOTTOM, w, h
         )
@@ -303,7 +278,6 @@ class IrisTracker:
     
     def _calculate_eye_openness(self, landmarks, top_indices: List[int],
                                 bottom_indices: List[int], w: int, h: int) -> float:
-        """Calculate eye openness ratio"""
         # Get top and bottom points
         top_y = np.mean([landmarks.landmark[i].y * h for i in top_indices])
         bottom_y = np.mean([landmarks.landmark[i].y * h for i in bottom_indices])
@@ -317,7 +291,6 @@ class IrisTracker:
         return float(normalized_height)
     
     def _estimate_pupil(self, iris_data: Dict) -> Dict:
-        """Estimate pupil center and diameter"""
         if not iris_data or "center" not in iris_data:
             return {"center": {"x": 0, "y": 0, "z": 0}, "diameter": 0.0}
         
@@ -340,7 +313,6 @@ class IrisTracker:
         }
     
     def _calculate_dilation_rate(self) -> float:
-        """Calculate pupil dilation rate"""
         if len(self.pupil_diameter_history) < 2:
             return 0.0
         
@@ -351,7 +323,6 @@ class IrisTracker:
         return float((current - recent_avg) / recent_avg if recent_avg > 0 else 0.0)
     
     def _detect_saccades(self, current_gaze: Dict) -> Dict:
-        """Detect micro-saccades (rapid eye movements)"""
         if not self.last_gaze_position:
             self.last_gaze_position = current_gaze
             return {"detected": False, "velocity": 0.0}
@@ -373,7 +344,6 @@ class IrisTracker:
         }
     
     def _calculate_blink_rate(self) -> float:
-        """Calculate blinks per minute"""
         if len(self.blink_history) < 2:
             return 0.0
         
@@ -392,7 +362,6 @@ class IrisTracker:
         return float(blinks_per_minute)
     
     def _calculate_confidence(self, landmarks) -> float:
-        """Calculate tracking confidence"""
         # Average visibility of iris landmarks
         left_vis = np.mean([landmarks.landmark[i].visibility 
                            for i in self.LEFT_IRIS if hasattr(landmarks.landmark[i], 'visibility')])
@@ -402,7 +371,6 @@ class IrisTracker:
         return float((left_vis + right_vis) / 2) if left_vis and right_vis else 0.5
     
     def calibrate(self):
-        """Calibrate iris tracking system"""
         logger.info("🎯 Calibrating iris tracker...")
         
         # Clear history
@@ -419,11 +387,9 @@ class IrisTracker:
         logger.info("✅ Iris calibration complete")
     
     def reset(self):
-        """Reset tracking state"""
         self.calibrate()
     
     def cleanup(self):
-        """Release resources"""
         logger.info("🧹 Cleaning up iris tracker...")
         if self.face_mesh:
             self.face_mesh.close()

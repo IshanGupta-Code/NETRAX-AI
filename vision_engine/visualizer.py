@@ -1,7 +1,3 @@
-"""
-NETRAX AI - Cyberpunk Visualizer
-Dystopian visual effects and HUD overlays
-"""
 
 import cv2
 import numpy as np
@@ -12,10 +8,6 @@ from config import settings
 logger = logging.getLogger("NETRAX.Visualizer")
 
 class CyberpunkVisualizer:
-    """
-    Cyberpunk-themed visualization system
-    Neon overlays, glitch effects, and dystopian aesthetics
-    """
     
     def __init__(self):
         logger.info("🎨 Initializing Cyberpunk Visualizer...")
@@ -38,7 +30,7 @@ class CyberpunkVisualizer:
         logger.info("✅ Visualizer initialized")
     
     def draw_body(self, frame: np.ndarray, body_data: Dict) -> np.ndarray:
-        """Draw body skeleton with cyberpunk style"""
+     
         if not body_data.get("detected"):
             return frame
         
@@ -90,7 +82,6 @@ class CyberpunkVisualizer:
         return frame
     
     def draw_iris(self, frame: np.ndarray, iris_data: Dict) -> np.ndarray:
-        """Draw iris tracking with ultra-precision visualization"""
         if not iris_data.get("detected"):
             return frame
         
@@ -115,7 +106,6 @@ class CyberpunkVisualizer:
     
     def _draw_single_iris(self, frame: np.ndarray, eye_data: Dict, 
                          w: int, h: int) -> np.ndarray:
-        """Draw single iris with detailed visualization"""
         iris = eye_data.get("iris", {})
         center = iris.get("center", {})
         radius = iris.get("radius", 0)
@@ -163,7 +153,6 @@ class CyberpunkVisualizer:
     
     def _draw_gaze_vector(self, frame: np.ndarray, gaze: Dict, 
                          w: int, h: int) -> np.ndarray:
-        """Draw gaze direction vector"""
         # Calculate start point (center of frame)
         start_x = int(gaze["x"])
         start_y = int(gaze["y"])
@@ -181,7 +170,6 @@ class CyberpunkVisualizer:
         return frame
     
     def draw_gesture(self, frame: np.ndarray, gesture_data: Dict) -> np.ndarray:
-        """Draw gesture indicator"""
         gesture = gesture_data.get("gesture")
         confidence = gesture_data.get("confidence", 0.0)
         
@@ -210,7 +198,6 @@ class CyberpunkVisualizer:
         return frame
     
     def draw_objects(self, frame: np.ndarray, object_data: Dict) -> np.ndarray:
-        """Draw detected objects"""
         detections = object_data.get("detections", [])
         
         for detection in detections:
@@ -232,7 +219,6 @@ class CyberpunkVisualizer:
         return frame
     
     def draw_hud(self, frame: np.ndarray, tracking_data: Dict, fps: float) -> np.ndarray:
-        """Draw heads-up display overlay"""
         h, w = frame.shape[:2]
         
         # FPS counter (top right)
@@ -254,7 +240,6 @@ class CyberpunkVisualizer:
         return frame
     
     def apply_effects(self, frame: np.ndarray) -> np.ndarray:
-        """Apply cyberpunk visual effects"""
         if settings.ENABLE_GLOW_EFFECT:
             frame = self._apply_glow(frame)
         
@@ -264,7 +249,6 @@ class CyberpunkVisualizer:
         return frame
     
     def _apply_glow(self, frame: np.ndarray) -> np.ndarray:
-        """Apply subtle glow effect"""
         blurred = cv2.GaussianBlur(frame, 
                                    (settings.GLOW_KERNEL_SIZE, settings.GLOW_KERNEL_SIZE), 
                                    0)
@@ -275,7 +259,6 @@ class CyberpunkVisualizer:
         return glowing
     
     def _apply_scanlines(self, frame: np.ndarray) -> np.ndarray:
-        """Apply CRT scanline effect"""
         h, w = frame.shape[:2]
         
         # Create scanline mask

@@ -1,14 +1,9 @@
-"""
-NETRAX AI - System Configuration
-Environment-based configuration management
-"""
 
 from pydantic_settings import BaseSettings
 from typing import Optional
 import os
 
 class Settings(BaseSettings):
-    """Application settings"""
     
     # Server Configuration
     HOST: str = "0.0.0.0"
@@ -111,7 +106,6 @@ settings = Settings()
 
 # GPU device configuration
 def get_device():
-    """Get optimal processing device"""
     if settings.USE_GPU:
         try:
             import torch
@@ -123,7 +117,6 @@ def get_device():
 
 # Validate settings on import
 def validate_settings():
-    """Validate configuration"""
     errors = []
     
     if settings.TARGET_FPS < 1 or settings.TARGET_FPS > 120:

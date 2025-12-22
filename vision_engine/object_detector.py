@@ -1,8 +1,3 @@
-"""
-NETRAX AI - Object Detector
-Real-time object detection using YOLOv8 with tracking
-"""
-
 import numpy as np
 from typing import Dict, Any, List
 import logging
@@ -11,10 +6,7 @@ from config import settings
 logger = logging.getLogger("NETRAX.ObjectDetector")
 
 class ObjectDetector:
-    """
-    Real-time object detection and tracking
-    Uses YOLOv8 for high-performance detection
-    """
+ 
     
     def __init__(self):
         logger.info("🎯 Initializing Object Detector...")
@@ -51,15 +43,7 @@ class ObjectDetector:
             self.model = None
     
     def process(self, frame: np.ndarray) -> Dict[str, Any]:
-        """
-        Detect objects in frame
-        
-        Args:
-            frame: BGR image
-            
-        Returns:
-            Detection results with bounding boxes and labels
-        """
+       
         if self.model is None:
             return {
                 "detected": False,
@@ -124,12 +108,10 @@ class ObjectDetector:
             }
     
     def reset(self):
-        """Reset tracking state"""
         logger.info("🔄 Resetting object detector...")
         self.tracked_objects = {}
         self.next_track_id = 0
     
     def cleanup(self):
-        """Cleanup resources"""
         logger.info("🧹 Cleaning up object detector...")
         self.model = None
